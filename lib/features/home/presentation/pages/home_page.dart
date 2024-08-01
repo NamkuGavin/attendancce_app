@@ -1,13 +1,17 @@
+import 'package:attendance_app/core/page/grid_page.dart';
+import 'package:attendance_app/core/route/navigate.dart';
 import 'package:attendance_app/core/theme/color_value.dart';
 import 'package:attendance_app/core/theme/text_style.dart';
 import 'package:attendance_app/core/widget/card/custom_profile.dart';
+import 'package:attendance_app/features/presence/presentation/pages/attendance.dart';
+import 'package:attendance_app/features/profile/presentation/pages/profile_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/widget/card/custom_card.dart';
-import '../../../../page1.dart';
 import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
 import '../bloc/home_state.dart';
@@ -61,7 +65,7 @@ class _HomePageState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => getPage(state.pageIndex)),
+                    builder: (context) => GridPage.getPage(state.pageIndex)),
               );
             }
           },
@@ -74,15 +78,6 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
-  }
-
-  Widget getPage(int index) {
-    switch (index) {
-      case 0:
-        return const Page1();
-      default:
-        return const Page1();
-    }
   }
 
   Widget _background() {
@@ -99,9 +94,12 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Align(
+          Align(
             alignment: Alignment.topRight,
-            child: CustomProfile(level: 'Manager'),
+            child: GestureDetector(
+                onTap: () =>
+                    Navigate.navigatorPush(context, const ProfilePage()),
+                child: const CustomProfile(level: 'Manager')),
           ),
           Text('Good morning',
               style: TextThemeData.getTextTheme(
@@ -112,7 +110,10 @@ class _HomePageState extends State<HomePage> {
                   Colors.black, 24.sp, FontWeight.w700)),
           SizedBox(height: 25.h),
           ElevatedButton(
-              onPressed: () {}, child: const Text('Employee Attendance')),
+              onPressed: () {
+                Navigate.navigatorPush(context, const AttendancePage());
+              },
+              child: const Text('Employee Attendance')),
           SizedBox(height: 25.h),
           CustomCard(
             child: ListTile(
@@ -153,12 +154,13 @@ class _HomePageState extends State<HomePage> {
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    if (index == 0) {
-                      BlocProvider.of<NavigationBloc>(context)
-                          .add(NavigateToPage(index));
-                    } else {
-                      _showPopup(context);
-                    }
+                    // if (index == 0) {
+                    //   BlocProvider.of<NavigationBloc>(context)
+                    //       .add(NavigateToPage(index));
+                    // } else {
+                    //   _showPopup(context);
+                    // }
+                    _showPopup(context);
                   },
                   child: Column(
                     children: [

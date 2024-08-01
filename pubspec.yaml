@@ -68,6 +68,7 @@ dependencies:
   flutter_downloader: ^1.11.8
   android_path_provider: ^0.3.0
   flutter_cached_pdfview: ^0.4.2
+  dotted_border: ^2.1.0
 
 dependency_overrides:
   geolocator_android: ^4.6.1
