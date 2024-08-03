@@ -1,6 +1,7 @@
 import 'package:attendance_app/core/route/navigate.dart';
 import 'package:attendance_app/core/theme/color_value.dart';
 import 'package:attendance_app/core/theme/text_style.dart';
+import 'package:attendance_app/core/widget/appbar/custom_appbar.dart';
 import 'package:attendance_app/core/widget/separator_line/separator.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
@@ -18,17 +19,7 @@ class _AttendancePageState extends State<AttendancePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              Navigate.navigatorPop(context);
-            },
-            icon: SvgPicture.asset("assets/icons/back.svg")),
-        centerTitle: true,
-        title: Text('Attendance',
-            style: TextThemeData.getTextTheme(
-                Colors.black, 16.sp, FontWeight.w500)),
-      ),
+      appBar: const CustomAppbar(title: 'Attendance'),
       body: _body(),
     );
   }

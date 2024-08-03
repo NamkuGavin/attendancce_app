@@ -10,6 +10,7 @@ class ColorValue {
   static const Color greyColor = Color(0XFF7E7E7E);
   static const Color borderColor = Color(0xFFBDBDBD);
   static const Color borderGreyColor = Color(0XFF606568);
+  static const Color textGreyColor = Color(0XFF828282);
   static const Color pendingColor = Color(0XFF95A13B);
   static const Color standByColor = Color(0XFF0A00C6);
   static const Color invalidColor = Color(0XFFD10000);
