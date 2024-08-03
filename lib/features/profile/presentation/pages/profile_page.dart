@@ -1,4 +1,6 @@
 import 'package:attendance_app/core/theme/color_value.dart';
+import 'package:attendance_app/core/widget/appbar/custom_appbar.dart';
+import 'package:attendance_app/features/history/presentation/pages/history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,17 +19,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              Navigate.navigatorPop(context);
-            },
-            icon: SvgPicture.asset("assets/icons/back.svg")),
-        centerTitle: true,
-        title: Text('Profile',
-            style: TextThemeData.getTextTheme(
-                Colors.black, 16.sp, FontWeight.w500)),
-      ),
+      appBar: const CustomAppbar(title: 'Profile'),
       body: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -35,7 +27,9 @@ class _ProfilePageState extends State<ProfilePage> {
             _profileCard(),
             SizedBox(height: 25.h),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigate.navigatorPush(context, const HistoryPage());
+              },
               style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   side: const BorderSide(
