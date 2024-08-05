@@ -50,7 +50,7 @@ class Dummy {
       totalHours: "08:30 total hrs",
       status: "approved",
       overtime: "00:30",
-      note: "Presentasi project",
+      note: "Project presentation",
     ),
     Attendance(
       date: "Friday, 05 August 2024",
@@ -62,7 +62,7 @@ class Dummy {
       totalHours: "09:00 total hrs",
       status: "approved",
       overtime: "01:00",
-      note: "Selesai task lebih cepat",
+      note: "Finish tasks faster",
     ),
     Attendance(
       date: "Monday, 08 August 2024",
@@ -74,7 +74,7 @@ class Dummy {
       totalHours: "08:30 total hrs",
       status: "approved",
       overtime: "00:30",
-      note: "Meeting dengan tim",
+      note: "Meeting with the team",
     ),
     Attendance(
       date: "Wednesday, 10 August 2024",
@@ -86,7 +86,7 @@ class Dummy {
       totalHours: "08:30 total hrs",
       status: "approved",
       overtime: "00:30",
-      note: "Training internal",
+      note: "Internal training",
     ),
     // Rejected entries
     Attendance(
@@ -99,7 +99,7 @@ class Dummy {
       totalHours: "07:30 total hrs",
       status: "rejected",
       overtime: "N/A",
-      note: "Absen terlambat",
+      note: "Late attendance",
     ),
     Attendance(
       date: "Friday, 12 August 2024",
@@ -111,7 +111,7 @@ class Dummy {
       totalHours: "07:30 total hrs",
       status: "rejected",
       overtime: "N/A",
-      note: "Pulang lebih awal",
+      note: "Leaving early",
     ),
     Attendance(
       date: "Monday, 15 August 2024",
@@ -123,7 +123,7 @@ class Dummy {
       totalHours: "07:00 total hrs",
       status: "rejected",
       overtime: "N/A",
-      note: "Tidak selesai task",
+      note: "Did not complete the task",
     ),
   ];
 }
