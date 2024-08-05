@@ -15,4 +15,7 @@ class ColorValue {
   static const Color standByColor = Color(0XFF0A00C6);
   static const Color invalidColor = Color(0XFFD10000);
   static const Color validColor = Color(0XFF00D10E);
+  static const Color bgPending = Color(0XFFFFFDE6);
+  static const Color bgRejected = Color(0XFFFFE6E6);
+  static const Color bgStandby = Color(0XFFE8E7FF);
 }

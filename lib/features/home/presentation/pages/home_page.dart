@@ -154,13 +154,13 @@ class _HomePageState extends State<HomePage> {
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    // if (index == 0) {
-                    //   BlocProvider.of<NavigationBloc>(context)
-                    //       .add(NavigateToPage(index));
-                    // } else {
-                    //   _showPopup(context);
-                    // }
-                    _showPopup(context);
+                    if (index == 0) {
+                      BlocProvider.of<NavigationBloc>(context)
+                          .add(NavigateToPage(index));
+                    } else {
+                      _showPopup(context);
+                    }
+                    // _showPopup(context);
                   },
                   child: Column(
                     children: [
