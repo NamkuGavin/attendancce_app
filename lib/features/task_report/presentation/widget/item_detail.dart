@@ -32,8 +32,8 @@ class _ItemTaskDetailState extends State<ItemTaskDetail> {
               Text(
                   'It can be a photo of your assignment or a selfie of you with your assignment.',
                   style: TextThemeData.getTextTheme(
-                      Colors.black, 12.sp, FontWeight.w500)),
-              SizedBox(height: 8.h),
+                      Colors.black, 12.sp, FontWeight.w600)),
+              SizedBox(height: 12.h),
               Image.asset("assets/illustrations/imageTask.png", scale: 0.8),
             ],
           )

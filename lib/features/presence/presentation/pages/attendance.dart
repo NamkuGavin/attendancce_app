@@ -5,8 +5,16 @@ import 'package:attendance_app/core/widget/appbar/custom_appbar.dart';
 import 'package:attendance_app/core/widget/separator_line/separator.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geolocator/geolocator.dart';
+
+import '../../../../core/widget/snackbar/snackbar_item.dart';
+import '../../bloc/location/location_bloc.dart';
+import '../../bloc/location/location_event.dart';
+import '../../bloc/location/location_state.dart';
+import '../widgets/show_dialog_error.dart';
 
 class AttendancePage extends StatefulWidget {
   const AttendancePage({super.key});
@@ -164,17 +172,63 @@ class _AttendancePageState extends State<AttendancePage> {
             style: TextThemeData.getTextTheme(
                 ColorValue.greyColor, 14.sp, FontWeight.w500)),
       ),
-      subtitle: Row(
-        children: [
-          Icon(Icons.circle, color: ColorValue.validColor, size: 15.h),
-          SizedBox(width: 8.w),
-          Text('Valid in the area',
-              style: TextThemeData.getTextTheme(
-                  ColorValue.validColor, 14.sp, FontWeight.w600))
-        ],
+      subtitle: BlocBuilder<LocationBloc, LocationState>(
+        builder: (context, state) {
+          if (state is LocationChecking) {
+            return Row(
+              children: [
+                Icon(Icons.circle, color: ColorValue.standByColor, size: 15.h),
+                SizedBox(width: 8.w),
+                Text('Checking...',
+                    style: TextThemeData.getTextTheme(
+                        ColorValue.standByColor, 14.sp, FontWeight.w600))
+              ],
+            );
+          } else if (state is LocationValid) {
+            return Row(
+              children: [
+                Icon(Icons.circle, color: ColorValue.validColor, size: 15.h),
+                SizedBox(width: 8.w),
+                Text('Valid in the area',
+                    style: TextThemeData.getTextTheme(
+                        ColorValue.validColor, 14.sp, FontWeight.w600))
+              ],
+            );
+          } else if (state is LocationInvalid) {
+            return Row(
+              children: [
+                Icon(Icons.circle, color: ColorValue.invalidColor, size: 15.h),
+                SizedBox(width: 8.w),
+                Text('Invalid outside area',
+                    style: TextThemeData.getTextTheme(
+                        ColorValue.invalidColor, 14.sp, FontWeight.w600))
+              ],
+            );
+          } else if (state is LocationError) {
+            return Row(
+              children: [
+                Icon(Icons.circle, color: Colors.red, size: 15.h),
+                SizedBox(width: 8.w),
+                Text(state.message,
+                    style: TextThemeData.getTextTheme(
+                        Colors.red, 14.sp, FontWeight.w600))
+              ],
+            );
+          }
+          return Row(
+            children: [
+              Icon(Icons.circle, color: Colors.grey, size: 15.h),
+              SizedBox(width: 8.w),
+              Text('Tap to check',
+                  style: TextThemeData.getTextTheme(
+                      Colors.grey, 14.sp, FontWeight.w600))
+            ],
+          );
+        },
       ),
       trailing: ElevatedButton(
-          onPressed: () {},
+          onPressed: () =>
+              context.read<LocationBloc>().add(CheckLocation(context)),
           style: ElevatedButton.styleFrom(
               side: const BorderSide(
                   width: 0.25, color: ColorValue.borderGreyColor),

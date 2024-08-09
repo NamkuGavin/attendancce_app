@@ -1,3 +1,4 @@
+import 'package:attendance_app/features/presence/bloc/location/location_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -22,15 +23,18 @@ Future<void> initializeServiceLocator() async {
   ///Feature - Home
   _initializeNavigationHomeFeature();
 
+  ///Feature - Location
+  _initializeLocationFeature();
+
   /// Core
   sl.registerLazySingleton<NetworkInfo>(
-        () => NetworkInfoImpl(
+    () => NetworkInfoImpl(
       sl(),
     ),
   );
 
   sl.registerLazySingleton<LocalStorage>(
-        () => LocalStorageImpl(
+    () => LocalStorageImpl(
       sharedPreferences: sl(),
     ),
   );
@@ -46,21 +50,21 @@ Future<void> initializeServiceLocator() async {
 void _initializeLoginFeature() {
   // bloc
   sl.registerFactory(
-        () => LoginBloc(
+    () => LoginBloc(
       postLogin: sl(),
     ),
   );
 
   // use case
   sl.registerLazySingleton(
-        () => PostLogin(
+    () => PostLogin(
       sl(),
     ),
   );
 
   // repository
   sl.registerLazySingleton<LoginRepository>(
-        () => LoginRepositoryImpl(
+    () => LoginRepositoryImpl(
       remoteDataSource: sl(),
       localDataSource: sl(),
     ),
@@ -68,13 +72,13 @@ void _initializeLoginFeature() {
 
   // data sources
   sl.registerLazySingleton<LoginRemoteDataSource>(
-        () => LoginRemoteDataSourceImpl(
+    () => LoginRemoteDataSourceImpl(
       client: sl(),
     ),
   );
 
   sl.registerLazySingleton<LoginLocalDataSource>(
-        () => LoginLocalDataSourceImpl(
+    () => LoginLocalDataSourceImpl(
       sharedPreferences: sl(),
     ),
   );
@@ -83,6 +87,13 @@ void _initializeLoginFeature() {
 void _initializeNavigationHomeFeature() {
   // bloc
   sl.registerFactory(
-        () => NavigationBloc(),
+    () => NavigationBloc(),
+  );
+}
+
+void _initializeLocationFeature() {
+  // bloc
+  sl.registerFactory(
+    () => LocationBloc(),
   );
 }
