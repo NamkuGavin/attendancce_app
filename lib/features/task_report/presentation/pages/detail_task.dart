@@ -1,4 +1,11 @@
+import 'dart:io';
+
+import 'package:attendance_app/features/task_report/bloc/camera_task/camera_task_bloc.dart';
+import 'package:attendance_app/features/task_report/bloc/location_task/location_task_bloc.dart';
+import 'package:attendance_app/features/task_report/bloc/location_task/location_task_bloc.dart';
+import 'package:attendance_app/features/task_report/bloc/location_task/location_task_state.dart';
 import 'package:attendance_app/features/task_report/data/models/model_dummy_task.dart';
+import 'package:attendance_app/features/task_report/presentation/pages/preview.dart';
 import 'package:attendance_app/features/task_report/presentation/widget/item_detail.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
@@ -6,14 +13,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../core/theme/app_style.dart';
 import '../../../../core/theme/color_value.dart';
 import '../../../../core/theme/text_style.dart';
-import '../../../../core/util/validator/input_validator.dart';
 import '../../../../core/widget/appbar/custom_appbar.dart';
 import '../../../../core/widget/text_form_field/custom_text_form_field.dart';
-import '../../../presence/bloc/location/location_bloc.dart';
-import '../../../presence/bloc/location/location_event.dart';
-import '../../../presence/bloc/location/location_state.dart';
+import '../../bloc/location_task/location_task_event.dart';
+import 'camera.dart';
 
 class DetailTaskPage extends StatefulWidget {
   final TaskReport data;
@@ -165,7 +171,7 @@ class _DetailTaskPageState extends State<DetailTaskPage> {
             style: TextThemeData.getTextTheme(
                 ColorValue.greyColor, 14.sp, FontWeight.w500)),
       ),
-      subtitle: BlocBuilder<LocationBloc, LocationState>(
+      subtitle: BlocBuilder<LocationTaskBloc, LocationTaskState>(
         builder: (context, state) {
           if (state is LocationChecking) {
             return Row(
@@ -225,7 +231,7 @@ class _DetailTaskPageState extends State<DetailTaskPage> {
           ? null
           : ElevatedButton(
               onPressed: () =>
-                  context.read<LocationBloc>().add(CheckLocation(context)),
+                  context.read<LocationTaskBloc>().add(CheckLocation(context)),
               style: ElevatedButton.styleFrom(
                   side: const BorderSide(
                       width: 0.25, color: ColorValue.borderGreyColor),
@@ -240,45 +246,86 @@ class _DetailTaskPageState extends State<DetailTaskPage> {
   }
 
   Widget _camera() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Image proof of your assignment',
-            style: TextThemeData.getTextTheme(
-                ColorValue.greyColor, 14.sp, FontWeight.w500)),
-        SizedBox(height: 8.h),
-        Text(
-            'It can be a photo of your assignment or a selfie of you with your assignment.',
-            style: TextThemeData.getTextTheme(
-                Colors.black, 12.sp, FontWeight.w600)),
-        SizedBox(height: 12.h),
-        SizedBox(
-          height: 200.h,
-          width: double.infinity,
-          child: DottedBorder(
-            borderType: BorderType.RRect,
-            radius: const Radius.circular(12),
-            dashPattern: const [12],
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(12)),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset('assets/icons/camera.svg',
-                        height: 50.h, width: 50.h),
-                    SizedBox(height: 10.h),
-                    Text('Take a picture',
-                        style: TextThemeData.getTextTheme(
-                            Colors.black, 14.sp, FontWeight.w500)),
-                  ],
-                ),
-              ),
+    return BlocConsumer<CameraTaskBloc, CameraTaskState>(
+      listener: (context, state) {
+        if (state is CameraPictureTaken) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PreviewPage(imagePath: state.imagePath),
             ),
-          ),
-        ),
-      ],
+          ).then((result) {
+            if (result != null) {
+              Navigator.pop(context, result);
+            } else {
+              context.read<CameraTaskBloc>().add(InitializeCameraEvent());
+            }
+          });
+        }
+      },
+      builder: (context, state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Image proof of your assignment',
+                style: TextThemeData.getTextTheme(
+                    ColorValue.greyColor, 14.sp, FontWeight.w500)),
+            SizedBox(height: 8.h),
+            Text(
+                'It can be a photo of your assignment or a selfie of you with your assignment.',
+                style: TextThemeData.getTextTheme(
+                    Colors.black, 12.sp, FontWeight.w600)),
+            SizedBox(height: 12.h),
+            state is CameraPictureTaken
+                ? Container(
+                    height: 200.h,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      image: DecorationImage(
+                          image: FileImage(File(state.imagePath))),
+                    ),
+                  )
+                : GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const CameraPage(),
+                      ),
+                    ).whenComplete(
+                      () => statusBarDarkStyle(),
+                    ),
+                    child: SizedBox(
+                      height: 200.h,
+                      width: double.infinity,
+                      child: DottedBorder(
+                        borderType: BorderType.RRect,
+                        radius: const Radius.circular(12),
+                        dashPattern: const [12],
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12)),
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset('assets/icons/camera.svg',
+                                    height: 50.h, width: 50.h),
+                                SizedBox(height: 10.h),
+                                Text('Take a picture',
+                                    style: TextThemeData.getTextTheme(
+                                        Colors.black, 14.sp, FontWeight.w500)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+          ],
+        );
+      },
     );
   }
 }

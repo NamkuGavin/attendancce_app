@@ -1,4 +1,6 @@
-import 'package:attendance_app/features/presence/bloc/location/location_bloc.dart';
+import 'package:attendance_app/features/presence/bloc/location_presence/location_presence_bloc.dart';
+import 'package:attendance_app/features/task_report/bloc/camera_task/camera_task_bloc.dart';
+import 'package:attendance_app/features/task_report/bloc/location_task/location_task_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -23,8 +25,11 @@ Future<void> initializeServiceLocator() async {
   ///Feature - Home
   _initializeNavigationHomeFeature();
 
-  ///Feature - Location
-  _initializeLocationFeature();
+  ///Feature - Location Task
+  _initializeTaskReportFeature();
+
+  ///Feature - Location Presence
+  _initializePresenceFeature();
 
   /// Core
   sl.registerLazySingleton<NetworkInfo>(
@@ -91,9 +96,24 @@ void _initializeNavigationHomeFeature() {
   );
 }
 
-void _initializeLocationFeature() {
+void _initializeTaskReportFeature() {
   // bloc
   sl.registerFactory(
-    () => LocationBloc(),
+    () => CameraTaskBloc(),
+  );
+
+  sl.registerFactory(
+    () => LocationTaskBloc(),
+  );
+}
+
+void _initializePresenceFeature() {
+  // bloc
+  // sl.registerFactory(
+  //   () => CameraBloc(),
+  // );
+
+  sl.registerFactory(
+    () => LocationPresenceBloc(),
   );
 }

@@ -3,17 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../../../core/widget/snackbar/snackbar_item.dart';
-import '../../presentation/widgets/show_dialog_error.dart';
-import 'location_event.dart';
-import 'location_state.dart';
+import '../../../presence/presentation/widgets/show_dialog_error.dart';
+import 'location_task_event.dart';
+import 'location_task_state.dart';
 
-class LocationBloc extends Bloc<LocationEvent, LocationState> {
-  LocationBloc() : super(LocationInitial()) {
+class LocationTaskBloc extends Bloc<LocationTaskEvent, LocationTaskState> {
+  LocationTaskBloc() : super(LocationInitial()) {
     on<CheckLocation>(_onCheckLocation);
   }
 
   Future<void> _onCheckLocation(
-      CheckLocation event, Emitter<LocationState> emit) async {
+      CheckLocation event, Emitter<LocationTaskState> emit) async {
     emit(LocationChecking());
 
     try {
