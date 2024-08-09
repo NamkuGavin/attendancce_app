@@ -1,6 +1,8 @@
 import 'package:attendance_app/features/task_report/data/models/model_dummy_task.dart';
 import 'package:attendance_app/features/task_report/presentation/widget/item_detail.dart';
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -9,6 +11,9 @@ import '../../../../core/theme/text_style.dart';
 import '../../../../core/util/validator/input_validator.dart';
 import '../../../../core/widget/appbar/custom_appbar.dart';
 import '../../../../core/widget/text_form_field/custom_text_form_field.dart';
+import '../../../presence/bloc/location/location_bloc.dart';
+import '../../../presence/bloc/location/location_event.dart';
+import '../../../presence/bloc/location/location_state.dart';
 
 class DetailTaskPage extends StatefulWidget {
   final TaskReport data;
@@ -112,19 +117,37 @@ class _DetailTaskPageState extends State<DetailTaskPage> {
               SizedBox(height: 15.h),
               const Divider(color: Color(0xFFD9D9D9), thickness: 1),
               SizedBox(height: 15.h),
-              const ItemTaskDetail(title: '', subtitle: '', isImage: true),
-              SizedBox(height: 15.h),
+              _camera(),
+              SizedBox(height: widget.data.status == "already" ? 0.h : 15.h),
               Text(
-                'Add notes (optional)',
+                widget.data.status == "already" ? '' : 'Add notes (optional)',
                 style: TextThemeData.getTextTheme(
                     Colors.black, 16.sp, FontWeight.w600),
               ),
               SizedBox(height: 8.h),
-              CustomTextFormField(
-                label: 'Enter notes',
-                controller: _notesController,
-                textInputType: TextInputType.text,
-              ),
+              widget.data.status == "already"
+                  ? const ItemTaskDetail(
+                      title: 'Notes', subtitle: "N/A", isImage: false)
+                  : CustomTextFormField(
+                      label: 'Enter notes',
+                      controller: _notesController,
+                      textInputType: TextInputType.text,
+                    ),
+              SizedBox(height: widget.data.status == "already" ? 0.h : 15.h),
+              widget.data.status == "already"
+                  ? Container()
+                  : ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                          minimumSize: Size(double.infinity, 50.h)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset("assets/icons/report.svg"),
+                          SizedBox(width: 10.w),
+                          const Text('Report your assignment results')
+                        ],
+                      )),
             ],
           ),
         ),
@@ -142,27 +165,120 @@ class _DetailTaskPageState extends State<DetailTaskPage> {
             style: TextThemeData.getTextTheme(
                 ColorValue.greyColor, 14.sp, FontWeight.w500)),
       ),
-      subtitle: Row(
-        children: [
-          Icon(Icons.circle, color: ColorValue.validColor, size: 15.h),
-          SizedBox(width: 8.w),
-          Text('Valid in the area',
-              style: TextThemeData.getTextTheme(
-                  ColorValue.validColor, 14.sp, FontWeight.w600))
-        ],
+      subtitle: BlocBuilder<LocationBloc, LocationState>(
+        builder: (context, state) {
+          if (state is LocationChecking) {
+            return Row(
+              children: [
+                Icon(Icons.circle, color: ColorValue.standByColor, size: 15.h),
+                SizedBox(width: 8.w),
+                Text('Checking...',
+                    style: TextThemeData.getTextTheme(
+                        ColorValue.standByColor, 14.sp, FontWeight.w600))
+              ],
+            );
+          } else if (state is LocationValid) {
+            return Row(
+              children: [
+                Icon(Icons.circle, color: ColorValue.validColor, size: 15.h),
+                SizedBox(width: 8.w),
+                Text('Valid in the area',
+                    style: TextThemeData.getTextTheme(
+                        ColorValue.validColor, 14.sp, FontWeight.w600))
+              ],
+            );
+          } else if (state is LocationInvalid) {
+            return Row(
+              children: [
+                Icon(Icons.circle, color: ColorValue.invalidColor, size: 15.h),
+                SizedBox(width: 8.w),
+                Text('Invalid outside area',
+                    style: TextThemeData.getTextTheme(
+                        ColorValue.invalidColor, 14.sp, FontWeight.w600))
+              ],
+            );
+          } else if (state is LocationError) {
+            return Row(
+              children: [
+                Icon(Icons.circle, color: Colors.red, size: 15.h),
+                SizedBox(width: 8.w),
+                Expanded(
+                  child: Text(state.message,
+                      style: TextThemeData.getTextTheme(
+                          Colors.red, 14.sp, FontWeight.w600)),
+                )
+              ],
+            );
+          }
+          return Row(
+            children: [
+              Icon(Icons.circle, color: ColorValue.validColor, size: 15.h),
+              SizedBox(width: 8.w),
+              Text('Valid in the area',
+                  style: TextThemeData.getTextTheme(
+                      ColorValue.validColor, 14.sp, FontWeight.w600))
+            ],
+          );
+        },
       ),
-      trailing: ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-              side: const BorderSide(
-                  width: 0.25, color: ColorValue.borderGreyColor),
-              minimumSize: Size.zero,
-              padding: EdgeInsets.zero,
-              backgroundColor: Colors.white),
-          child: Padding(
-            padding: EdgeInsets.all(8.h),
-            child: SvgPicture.asset("assets/icons/location.svg"),
-          )),
+      trailing: widget.data.status == "already"
+          ? null
+          : ElevatedButton(
+              onPressed: () =>
+                  context.read<LocationBloc>().add(CheckLocation(context)),
+              style: ElevatedButton.styleFrom(
+                  side: const BorderSide(
+                      width: 0.25, color: ColorValue.borderGreyColor),
+                  minimumSize: Size.zero,
+                  padding: EdgeInsets.zero,
+                  backgroundColor: Colors.white),
+              child: Padding(
+                padding: EdgeInsets.all(8.h),
+                child: SvgPicture.asset("assets/icons/location.svg"),
+              )),
+    );
+  }
+
+  Widget _camera() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Image proof of your assignment',
+            style: TextThemeData.getTextTheme(
+                ColorValue.greyColor, 14.sp, FontWeight.w500)),
+        SizedBox(height: 8.h),
+        Text(
+            'It can be a photo of your assignment or a selfie of you with your assignment.',
+            style: TextThemeData.getTextTheme(
+                Colors.black, 12.sp, FontWeight.w600)),
+        SizedBox(height: 12.h),
+        SizedBox(
+          height: 200.h,
+          width: double.infinity,
+          child: DottedBorder(
+            borderType: BorderType.RRect,
+            radius: const Radius.circular(12),
+            dashPattern: const [12],
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(12)),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset('assets/icons/camera.svg',
+                        height: 50.h, width: 50.h),
+                    SizedBox(height: 10.h),
+                    Text('Take a picture',
+                        style: TextThemeData.getTextTheme(
+                            Colors.black, 14.sp, FontWeight.w500)),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
