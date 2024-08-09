@@ -1,11 +1,11 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-abstract class LocationEvent extends Equatable {
-  const LocationEvent();
+abstract class LocationTaskEvent extends Equatable {
+  const LocationTaskEvent();
 }
 
-class CheckLocation extends LocationEvent {
+class CheckLocation extends LocationTaskEvent {
   final BuildContext context;
   const CheckLocation(this.context);
 

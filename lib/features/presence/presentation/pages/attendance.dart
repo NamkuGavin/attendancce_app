@@ -1,20 +1,15 @@
-import 'package:attendance_app/core/route/navigate.dart';
 import 'package:attendance_app/core/theme/color_value.dart';
 import 'package:attendance_app/core/theme/text_style.dart';
 import 'package:attendance_app/core/widget/appbar/custom_appbar.dart';
 import 'package:attendance_app/core/widget/separator_line/separator.dart';
+import 'package:attendance_app/features/presence/bloc/location_presence/location_presence_bloc.dart';
+import 'package:attendance_app/features/presence/bloc/location_presence/location_presence_state.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:geolocator/geolocator.dart';
-
-import '../../../../core/widget/snackbar/snackbar_item.dart';
-import '../../bloc/location/location_bloc.dart';
-import '../../bloc/location/location_event.dart';
-import '../../bloc/location/location_state.dart';
-import '../widgets/show_dialog_error.dart';
+import '../../bloc/location_presence/location_presence_event.dart';
 
 class AttendancePage extends StatefulWidget {
   const AttendancePage({super.key});
@@ -172,7 +167,7 @@ class _AttendancePageState extends State<AttendancePage> {
             style: TextThemeData.getTextTheme(
                 ColorValue.greyColor, 14.sp, FontWeight.w500)),
       ),
-      subtitle: BlocBuilder<LocationBloc, LocationState>(
+      subtitle: BlocBuilder<LocationPresenceBloc, LocationPresenceState>(
         builder: (context, state) {
           if (state is LocationChecking) {
             return Row(
@@ -228,7 +223,7 @@ class _AttendancePageState extends State<AttendancePage> {
       ),
       trailing: ElevatedButton(
           onPressed: () =>
-              context.read<LocationBloc>().add(CheckLocation(context)),
+              context.read<LocationPresenceBloc>().add(CheckLocation(context)),
           style: ElevatedButton.styleFrom(
               side: const BorderSide(
                   width: 0.25, color: ColorValue.borderGreyColor),
